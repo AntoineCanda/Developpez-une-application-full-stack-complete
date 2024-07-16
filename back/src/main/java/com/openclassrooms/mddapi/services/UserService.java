@@ -29,4 +29,13 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
+    public boolean isUserAdmin(String username){
+        boolean isAdmin = false;
+        User user = this.userRepository.findByEmail(username).orElse(null);
+        if (user != null) {
+            isAdmin = user.isAdmin();
+        }
+        return isAdmin;
+    }
+
 }
