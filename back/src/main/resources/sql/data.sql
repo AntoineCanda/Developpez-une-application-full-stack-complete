@@ -1,10 +1,10 @@
--- password: test!1234
+-- password: Test!1234
 INSERT INTO
     users (
         username,
         email,
+        admin,
         password,
-        role,
         created_at,
         updated_at
     )
@@ -12,16 +12,16 @@ VALUES
     (
         'Admin',
         'admin@mdd.com',
-        '$2a$10$OrLIi.J1M2Y19h.QfIp3.e3BW7LxRuunsNHFQm.gnp60hwo.5fCci',
-        'admin',
+        true,
+        '$2y$10$i60yXqzJWkn4/YNp8bwBh.9iP/ztomQ6/lYJdsCAzU9R.bEuR3vvW',
         null,
         null
     ),
     (
         'John Doe',
         'john.doe@example.com',
-        '$2a$10$OrLIi.J1M2Y19h.QfIp3.e3BW7LxRuunsNHFQm.gnp60hwo.5fCci',
-        'user',
+        false,
+        '$2y$10$i60yXqzJWkn4/YNp8bwBh.9iP/ztomQ6/lYJdsCAzU9R.bEuR3vvW',
         null,
         null
     );
