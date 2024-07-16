@@ -10,12 +10,12 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    `users` (
+    `USERS` (
         `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-        `username` VARCHAR(255),
+        `username` VARCHAR(40),
+        `admin` BOOLEAN NOT NULL DEFAULT false,
         `email` VARCHAR(255),
         `password` VARCHAR(255),
-        `role` VARCHAR(255),
         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
