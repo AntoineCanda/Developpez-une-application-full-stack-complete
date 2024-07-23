@@ -1,0 +1,65 @@
+<header class="flex items-center border-b border-b-gray-500">
+    <img
+      class="w-[100px] md:w-[140px]"
+      src="../../../assets/logo_p6.png"
+      alt=""
+    />
+  </header>
+  <a class="m-10" mat-icon-button (click)="back()">
+    <mat-icon>west</mat-icon>
+  </a>
+  <div class="flex flex-col items-center">
+    <h6>Se connecter</h6>
+    <form
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      class="flex flex-col mt-5"
+    >
+    <mat-label class="items-start">E-mail</mat-label>
+      <mat-form-field appearance="outline">
+        <input matInput  formControlName="email" />
+        @if (email.invalid) {
+            <mat-error>Your email is required.</mat-error>
+        }
+      </mat-form-field>
+      <mat-label class="items-start">Mot de passe</mat-label>
+      <mat-form-field appearance="outline">
+        <input
+          [type]="hide ? 'password' : 'text'"
+          matInput
+          formControlName="password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="hide = !hide"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide"
+        >
+          <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+        @if (password.invalid) {
+            <mat-error>Your password must have lower case, upper case, numeric and special characters.</mat-error>
+        }
+        
+      </mat-form-field>
+
+      <button
+        mat-stroked-button
+        class="btn"
+        type="submit"
+        [disabled]="form.invalid"
+      >
+        Se connecter
+      </button>
+      @if(onError){
+        <mat-error>Une erreur est survenue !</mat-error>
+      }
+      @if(badCredentials){
+        <mat-error> L'email ou le mot de passe est incorrect !</mat-error>
+      }
+    
+     
+      
+    </form>
+  </div>
