@@ -23,18 +23,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
+@AllArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
     private final JwtUtils jwtUtils;
-
-    public AuthController(AuthService authService, JwtUtils jwtUtils) {
-        this.authService = authService;
-        this.jwtUtils = jwtUtils;
-    }
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Register a new user")
