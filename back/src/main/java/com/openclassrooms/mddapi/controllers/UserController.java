@@ -21,19 +21,16 @@ import com.openclassrooms.mddapi.models.User;
 import com.openclassrooms.mddapi.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
 
 @CrossOrigin
 @RestController
 @RequestMapping("api/user")
+@AllArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
-
-    public UserController(UserService userService, UserMapper modelMapper) {
-        this.userService = userService;
-        this.userMapper = modelMapper;
-    }
 
     @Operation(summary = "Get a User by its id")
     @GetMapping("/me")
