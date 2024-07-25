@@ -1,0 +1,107 @@
+package com.openclassrooms.mddapi.controllers;
+
+import java.security.Principal;
+
+import org.apache.coyote.BadRequestException;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.openclassrooms.mddapi.dto.UpdateUserDto;
+import com.openclassrooms.mddapi.mapper.UserMapper;
+import com.openclassrooms.mddapi.models.User;
+import com.openclassrooms.mddapi.services.UserService;
+
+import io.swagger.v3.oas.annotations.Operation;
+
+@CrossOrigin
+@RestController
+@RequestMapping("api/user")
+public class UserController {
+
+    private final UserService userService;
+    private final UserMapper userMapper;
+
+    public UserController(UserService userService, UserMapper modelMapper) {
+        this.userService = userService;
+        this.userMapper = modelMapper;
+    }
+
+    @Operation(summary = "Get a User by its id")
+    @GetMapping("/me")
+    public ResponseEntity<?> getUser(@PathVariable("id") final Long id) {
+        try {
+            User user = this.userService.findById(id);
+
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok().body(userMapper.toDto(user));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Operation(summary = "Update a User")
+    @PutMapping("update/{id}")
+    public ResponseEntity<?> update(Principal principal, @RequestBody UpdateUserDto updateUserDto) {
+        try {
+            User user = userService.findByEmail(principal.getName());
+            user.setEmail(updateUserDto.getEmail());
+            user.setUsername(updateUserDto.getUserName());
+            User updatedUser = this.userService.save(user);
+
+            return ResponseEntity.ok().body(userMapper.toDto(updatedUser));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Operation(summary = "Subscribe to a subject")
+    @PostMapping("subscribe/{subjectId}")
+    public ResponseEntity<?> subscribe(Principal principal, @PathVariable("subjectId") String subjectId) {
+        try {
+            User user = userService.findByEmail(principal.getName());
+            User updatedUser = this.userService.subscribe(user, Long.valueOf(subjectId));
+
+            return ResponseEntity.ok().body(userMapper.toDto(updatedUser));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (BadRequestException e) {
+            // TODO Auto-generated catch block
+            return ResponseEntity.badRequest().build();
+        } catch (NotFoundException e) {
+            // TODO Auto-generated catch block
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "Unsubscribe from a subject")
+    @DeleteMapping("unsubscribe/{subjectId}")
+    public ResponseEntity<?> unsubscribe(Principal principal, @PathVariable("subjectId") String subjectId) {
+        try {
+            User user = userService.findByEmail(principal.getName());
+            User updatedUser = this.userService.unsubscribe(user, Long.valueOf(subjectId));
+
+            return ResponseEntity.ok().body(userMapper.toDto(updatedUser));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (BadRequestException e) {
+            // TODO Auto-generated catch block
+            return ResponseEntity.badRequest().build();
+        } catch (NotFoundException e) {
+            // TODO Auto-generated catch block
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+}
