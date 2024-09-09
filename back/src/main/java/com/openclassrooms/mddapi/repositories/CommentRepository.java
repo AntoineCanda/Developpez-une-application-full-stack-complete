@@ -13,4 +13,6 @@ import com.openclassrooms.mddapi.models.Post;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Optional<List<Comment>> findByPost(Post post);
+
+    Optional<List<Comment>> findAllByPostIdOrderByCreatedDateAsc(long postId);
 }

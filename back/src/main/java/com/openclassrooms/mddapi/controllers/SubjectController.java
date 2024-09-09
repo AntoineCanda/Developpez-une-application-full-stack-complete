@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,7 @@ public class SubjectController {
     private final SubjectService subjectService;
     private final SubjectMapper subjectMapper;
 
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseEntity<SubjectResponse> getAllSubjects() {
         List<Subject> subjects = subjectService.getAllSubjects();
         SubjectResponse response = new SubjectResponse(subjects);
@@ -33,6 +34,7 @@ public class SubjectController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/")
     public ResponseEntity<MessageResponse> createSubject(@RequestBody SubjectDto dto) {
         Subject subject = subjectMapper.toEntity(dto);
         subjectService.create(subject);
