@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.openclassrooms.mddapi.models.User;
-import com.openclassrooms.mddapi.repositories.UserRepository;
+import com.openclassrooms.mddapi.repositories.IUserRepository;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    UserRepository userRepository;
+    IUserRepository userRepository;
 
     @Override
     @Transactional
@@ -24,6 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .builder()
                 .id(user.getId())
                 .username(user.getEmail())
+                .email(user.getEmail())
                 .password(user.getPassword())
                 .build();
     }

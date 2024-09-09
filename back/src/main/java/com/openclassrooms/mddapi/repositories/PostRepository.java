@@ -12,5 +12,6 @@ import com.openclassrooms.mddapi.models.Subject;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Optional<List<Post>> findBySubject(Subject subject);
+    Optional<List<Post>> findAllBySubjectOrderByCreatedDateDesc(Subject subject);
+
 }

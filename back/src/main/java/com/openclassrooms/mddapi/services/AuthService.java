@@ -1,6 +1,9 @@
 package com.openclassrooms.mddapi.services;
 
+import java.security.Principal;
+
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,23 +13,27 @@ import org.springframework.stereotype.Service;
 import com.openclassrooms.mddapi.models.User;
 import com.openclassrooms.mddapi.payload.request.LoginRequest;
 import com.openclassrooms.mddapi.payload.request.SignupRequest;
-import com.openclassrooms.mddapi.repositories.UserRepository;
 import com.openclassrooms.mddapi.security.jwt.JwtUtils;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.openclassrooms.mddapi.exception.AuthenticationException;
+
+import lombok.AllArgsConstructor;
 
 @Service
-@Data
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
+
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    public User register(SignupRequest signUpRequest) throws Exception {
+    public String register(SignupRequest signUpRequest) throws Exception {
         if (userService.findByEmail(signUpRequest.getEmail()) != null) {
             throw new Exception("The email is already taken by another user.");
         }
@@ -35,15 +42,37 @@ public class AuthService {
                 signUpRequest.getUsername(),
                 passwordEncoder.encode(signUpRequest.getPassword()));
 
-        return userService.save(user);
-    }
+        userService.save(user);
 
-    public Authentication authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(signUpRequest.getEmail(), signUpRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return authentication;
+
+        return jwtUtils.generateJwtToken(authentication);
+    }
+
+    public String authenticateUser(LoginRequest loginRequest) {
+
+        try {
+            // Attempts to authenticate the user using the provided credentials.
+            // If the credentials are invalid, a BadCredentialsException is thrown.
+            String email = loginRequest.getEmail();
+            String password = loginRequest.getPassword();
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            return jwtUtils.generateJwtToken(authentication);
+
+        } catch (BadCredentialsException e) {
+            // Throws an AuthentificationException with a message indicating that the credentials are invalid.
+            LOGGER.error("Erreur lors de l'authentification de l'utilisateur : " + e.getMessage());
+            throw new AuthenticationException(e.getMessage());
+        }
+    }
+
+    public User getUserFromPrincipal(Principal principal) {
+        return userService.findByEmail(principal.getName());
     }
 
 }
